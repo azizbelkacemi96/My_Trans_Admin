@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.utils.html import format_html
-
+from multiupload.fields import MultiFileField
 from .models import Employee, Mission, File
 from django import forms
 
 
 class MissionForm(forms.ModelForm):
-    file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+    files = MultiFileField(min_num=1, max_num=10, max_file_size=1024*1024*5)
 
     class Meta:
         model = Mission
@@ -54,6 +54,7 @@ class MissionAdmin(admin.ModelAdmin):
         css = {
             'all': ['https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'],
         }
+
 
 admin.site.register(Employee)
 admin.site.register(Mission, MissionAdmin)
