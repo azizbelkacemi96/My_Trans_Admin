@@ -8,11 +8,13 @@ from django import forms
 
 
 class MissionForm(forms.ModelForm):
-    files = MultiFileField(min_num=0, max_num=10, max_file_size=1024 * 1024 * 5, required=False)
+    files = MultiFileField(
+        min_num=0, max_num=10, max_file_size=1024 * 1024 * 5, required=False
+    )
 
     class Meta:
         model = Mission
-        fields = '__all__'
+        fields = "__all__"
 
 
 class MissionStockItemInline(admin.TabularInline):
@@ -20,25 +22,44 @@ class MissionStockItemInline(admin.TabularInline):
 
 
 class MissionAdmin(admin.ModelAdmin):
-    list_display = ['name', 'start_date', 'end_date', 'start_zipcode', 'end_zipcode',
-                    'distance', 'hotel_expenses', 'load_volume', 'category',
-                    'toll_expenses', 'rental_expenses', 'get_employees', 'price_HT', 'result', 'get_files_display',
-                    'get_items_summary']
-    ordering = ['start_date']
-    search_fields = ['name']
+    list_display = [
+        "name",
+        "start_date",
+        "end_date",
+        "start_zipcode",
+        "end_zipcode",
+        "distance",
+        "hotel_expenses",
+        "load_volume",
+        "category",
+        "toll_expenses",
+        "rental_expenses",
+        "get_employees",
+        "price_HT",
+        "result",
+        "get_files_display",
+        "get_items_summary",
+    ]
+    ordering = ["start_date"]
+    search_fields = ["name"]
     form = MissionForm
     inlines = [MissionStockItemInline]
-    filter_horizontal = ('stock_items',)
+    filter_horizontal = ("stock_items",)
 
     def get_employees(self, obj):
-        return ", ".join([f'{employee.first_name} {employee.last_name}' for employee in obj.employees.all()])
+        return ", ".join(
+            [
+                f"{employee.first_name} {employee.last_name}"
+                for employee in obj.employees.all()
+            ]
+        )
 
-    get_employees.short_description = 'Employees'
+    get_employees.short_description = "Employees"
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
-        if 'files' in form.cleaned_data:
-            files = form.cleaned_data['files']
+        if "files" in form.cleaned_data:
+            files = form.cleaned_data["files"]
             for uploaded_file in files:
                 File.objects.create(mission=form.instance, file=uploaded_file)
 
@@ -50,13 +71,13 @@ class MissionAdmin(admin.ModelAdmin):
                 file_link = format_html(
                     '<a href="{}" target="_blank"><i class="fas fa-file"></i> {}</a>',
                     file.file.url,
-                    file.file.name.split("/")[-1]
+                    file.file.name.split("/")[-1],
                 )
                 file_links.append(file_link)
             return format_html("<br>".join(file_links))
-        return '-'
+        return "-"
 
-    get_files_display.short_description = 'Files'
+    get_files_display.short_description = "Files"
     get_files_display.allow_tags = True
 
     def get_items_summary(self, obj):
@@ -76,7 +97,9 @@ class MissionAdmin(admin.ModelAdmin):
 
     class Media:
         css = {
-            'all': ['https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'],
+            "all": [
+                "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+            ],
         }
 
 
